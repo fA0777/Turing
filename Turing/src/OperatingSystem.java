@@ -6,13 +6,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class System {
+public class OperatingSystem {
     Scanner sc=new Scanner(java.lang.System.in);
     ArrayList<Student> students=new ArrayList<>();
     ArrayList<Course> courses=new ArrayList<>();
     ArrayList<Performance> performances=new ArrayList<>();
     DateTimeFormatter formatter=DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    public System() throws IOException, ClassNotFoundException {
+    public OperatingSystem() throws IOException, ClassNotFoundException {
         //读取本地文件中的用户信息,并放到集合当中
         readInfo();
         //主界面
