@@ -14,7 +14,7 @@ public class Delete {
         System.out.println("请输入课程号：");
         String courseId = sc.next();
         //待办：看是否有该课程，返回null，则输出提示
-        Course c = Operator.searchCourseByCourseId(courseId);
+        Course c = System.searchCourseByCourseId(courseId);
         if (c == null) {
 
         } else {
