@@ -6,7 +6,7 @@ public class Student implements Serializable {
     private char sex;
     private int classNum;
     private String mail;
-    //待办：信息建立时间、信息修改时间
+    //待办：根据学号中的专业码设置专业信息
     private String setUpTime;
     private String lastModifiedTime;
 

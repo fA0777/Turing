@@ -4,11 +4,12 @@ import java.util.ArrayList;
 public class Initialize {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         ArrayList<Student> students1=new ArrayList<>();
-        students1.add(new Student());
+        //若用无参构造器，后续操作易出现空指针异常
+        students1.add(new Student("0","0","0"));
         ArrayList<Course> courses1=new ArrayList<>();
-        courses1.add(new Course());
+        courses1.add(new Course("0","0",0,0));
         ArrayList<Performance> performances1=new ArrayList<>();
-        performances1.add(new Performance());
+        performances1.add(new Performance("0","0",0,"0"));
         ObjectOutputStream oos1=new ObjectOutputStream(new FileOutputStream("Turing\\src\\studentInfo.txt"));
         oos1.writeObject(students1);
         ObjectOutputStream oos2=new ObjectOutputStream(new FileOutputStream("Turing\\src\\courseInfo.txt"));
