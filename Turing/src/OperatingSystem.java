@@ -1,8 +1,7 @@
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.*;
 
 public class OperatingSystem {
 
@@ -10,6 +9,9 @@ public class OperatingSystem {
     ArrayList<Student> students=new ArrayList<>();
     static ArrayList<Course> courses=new ArrayList<>();
     ArrayList<Performance> performances=new ArrayList<>();
+    ArrayList specialtyList=new ArrayList();
+    static Map specialtyMap=new HashMap();
+
     DateTimeFormatter formatter=DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public OperatingSystem() throws IOException, ClassNotFoundException {
@@ -27,13 +29,29 @@ public class OperatingSystem {
         courses = (ArrayList<Course>) ois2.readObject();
         ObjectInputStream ois3=new ObjectInputStream(new FileInputStream("Turing\\src\\performanceInfo.txt"));
         performances= (ArrayList<Performance>)ois3.readObject();
+        //先从文件中读取专业信息
+        BufferedReader br=new BufferedReader(new InputStreamReader(new FileInputStream("Turing\\src\\specialtyInfo.txt"), "UTF-8"));
+        String line;
+        while ((line=br.readLine())!=null){
+            //每读取到一行专业信息，依据"    "分割成字符串数组，存入list集合中
+            String[] s = line.split("    ");
+            for (int i = 0; i < s.length; i++) {
+                specialtyList.add(s[i]);
+            }
+        }
+        //遍历list集合，将一个专业名与一个专业编码作为一组键值对存入Map集合
+        //注意从第三个元素开始存
+        for (int i = 2; i < specialtyList.size(); i+=2) {
+            specialtyMap.put(specialtyList.get(i+1),specialtyList.get(i));
+        }
+
         //读完关流
         ois1.close();
         ois2.close();
         ois3.close();
+        br.close();
     }
 
-    //待办：用IO流读取专业码，根据专业码设置专业
     public void start(){
         while (true) {
             System.out.println("=====学生成绩管理系统=====");
@@ -319,7 +337,7 @@ public class OperatingSystem {
         System.out.println("请输入学号");
         String studentId=sc.next();
         Student s=searchStudentByStudentId(studentId);
-        //待办：若学生为null，输出提示
+        //若学生为null，输出提示
         if (s==null){
             System.out.println("该学生不存在，请先录入学生");
             return;
@@ -332,7 +350,7 @@ public class OperatingSystem {
             System.out.println("请选择：");
             int command = sc.nextInt();
             switch (command) {
-                //待办：每个case中修改成功后都重新设置最后修改时间
+                //每个case中修改成功后都重新设置最后修改时间
                 case 1:
                     Modify.modifyStudentName(s);
                     break;
@@ -361,7 +379,7 @@ public class OperatingSystem {
         System.out.println("请输入学号：");
         String studentId=sc.next();
         Student s=searchStudentByStudentId(studentId);
-        //待办：若学生为null，输出提示
+        //若学生为null，输出提示
         if (s==null){
             System.out.println("该学生不存在，请先录入学生");
             return;
@@ -380,7 +398,6 @@ public class OperatingSystem {
     }
 
     private void inputPerformance() {
-        //待办：信息校验
         System.out.println("====学生成绩录入====");
         if (students.size()<=1){
             System.out.println("当前系统中无学生信息，请先录入");
@@ -416,7 +433,11 @@ public class OperatingSystem {
                 //成绩集合中无相同成绩信息，则录入
                 System.out.println("请输入成绩：");
                 double score=sc.nextDouble();
-                //待办：校验成绩是否合理
+                //校验成绩是否合理
+                if (score<0||score>100){
+                    System.out.println("输入的成绩有误，请重新操作！");
+                    return;
+                }
                 Performance p=new Performance();
                 p.setCourseId(c.getCourseId());
                 p.setStudentId(s.getStudentId());
@@ -464,11 +485,10 @@ public class OperatingSystem {
     }
 
     private void inputCourseInfo() {
-        //待办：信息校验
         System.out.println("====课程信息录入====");
         System.out.println("请输入课程号：");
         String courseId=sc.next();
-        //判断系统中是否有学生，若还无学生，则直接添加该生(若不做这一步，第一次添加学生时会出现空指针异常)
+        //判断系统中是否有课程，若还无课程，则直接添加该课程(若不做这一步，第一次添加课程时会出现空指针异常)
         //初始化时，添加了一个对象，因此判断有无应与1比较
         if (courses.size()>1){
             //根据课程号判断是否已经存在
@@ -499,10 +519,10 @@ public class OperatingSystem {
         System.out.println("====学生基本信息录入====");
         System.out.println("请输入学生姓名：");
         String name=sc.next();
-        //待办！用正则表达式校验姓名是否符合规范：2-6个中文汉字/大写开头的英文 不能有数字
         System.out.println("请输入学生学号：(注：学号规范：前四位数字为入学年份，接下来四位为专业码，接下来一位为班级，再接一位：1为男（0女），最后两位为班级序号)");
         String studentId=sc.next();
-        //判断系统中是否有学生，若还无学生，则直接添加该生(若不做这一步，第一次添加学生时会出现空指针异常)
+
+        //判断系统中是否有学生，若还无学生，则直接添加该生(若不做这一步，第一次添加学生时会出现空指针异常(Initial类中创建对象时用有参构造器就可以不做这步))
         //初始化时，添加了一个对象，因此判断有无应与1比较
         if (students.size()>1){
             //根据学号判断该生是否已存在，若存在，打印提示
@@ -513,25 +533,73 @@ public class OperatingSystem {
                 }
             }
         }
-        Student s=new Student();
-        s.setName(name);
-        //待办！用正则表达式校验学号是否符合规范：2020为入学年，0006为专业码，4为班级，1为男（0女），26班级序号
-        //用IO流获取所有专业码，再比对
-        s.setStudentId(studentId);
-        System.out.println("请输入学生邮箱：");
-        String mail=sc.next();
-        //待办！用正则表达式校验邮箱是否符合规范
-        s.setMail(mail);
-        //待办：由获取到的学号设置学生性别、班级
-        setStudentInfo(s);
-        //待办：获取系统当前时间为信息建立时间和最后修改时间
-        LocalDateTime d=LocalDateTime.now();
-        String date=formatter.format(d);
-        s.setSetUpTime(date);
-        s.setLastModifiedTime(date);
-        students.add(s);
-        System.out.println("学生基本信息录入成功！");
+        //用正则表达式校验学号是否符合规范：2020为入学年，0006为专业码，4为班级，1为男（0女），26班级序号
+        if (!checkStudentId(studentId)){
+            System.out.println("输入的学号有误，请重新操作!");
+            return;
+        }
+        //比对是否与专业码匹配
+        String specialty=searchSpecialtyByNum(studentId);
+        if (specialty!=null){
+            Student s=new Student();
+            s.setName(name);
+            s.setStudentId(studentId);
+            System.out.println("请输入学生邮箱：");
+            String mail=sc.next();
+            //用正则表达式校验邮箱是否符合规范
+            if (checkMail(mail)){
+                s.setMail(mail);
+            }else {
+                System.out.println("输入的邮箱有误，请重新操作！");
+                return;
+            }
+            //由获取到的学号设置学生性别、班级、专业
+            setStudentInfo(s);
+            s.setSpecialty(specialty);
+            //获取系统当前时间为信息建立时间和最后修改时间
+            LocalDateTime d=LocalDateTime.now();
+            String date=formatter.format(d);
+            s.setSetUpTime(date);
+            s.setLastModifiedTime(date);
+            students.add(s);
+            System.out.println("学生基本信息录入成功！");
+        }else{
+            System.out.println("输入的专业码有误，请重新操作！");
+            return;
+        }
+
     }
+
+    private boolean checkStudentId(String studentId) {
+        //用正则表达式校验学号是否符合规范  2020为入学年，0006为专业码，4为班级，1为男（0女），26班级序号
+        String regex="\\d{9}[0|1]\\d{2}";
+        return studentId.matches(regex);
+    }
+
+    private boolean checkMail(String mail) {
+        //用正则表达式校验邮箱是否符合规范
+        String regex="\\w+@[\\w&&[^_]]{2,}(\\.[a-zA-Z]{2,3}){1,2}";
+        return mail.matches(regex);
+    }
+
+    static String searchSpecialtyByNum(String studentId) {
+        //根据专业编码查找专业
+        String specialty="";
+        for (int i = 4; i < 8; i++) {
+            specialty+=studentId.charAt(i);
+            //获取了输入的专业编码
+        }
+        Set keySet = specialtyMap.keySet();
+        //获取专业编码集合
+        for (Object o : keySet) {
+            if (o.equals(specialty)){
+                return (String) specialtyMap.get(o);
+                //返回根据专业码找到的专业名
+            }
+        }
+        return null;
+    }
+
 
     static void setStudentInfo(Student s) {
         int classNum=s.getStudentId().charAt(8)-'0';

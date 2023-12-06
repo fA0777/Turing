@@ -1,6 +1,7 @@
 import java.io.Serializable;
 
 public class Performance implements Serializable {
+    private static final long serialVersionUID= -4002876450381367836L;
     private String courseId;
     private String studentId;
     private double score;

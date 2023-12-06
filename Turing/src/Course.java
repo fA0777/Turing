@@ -1,6 +1,7 @@
 import java.io.Serializable;
 
 public class Course implements Serializable {
+    private static final long serialVersionUID=1371216554879142405L;
     private String courseId;
     private String name;
     private int courseCredit;

@@ -1,8 +1,19 @@
 import java.io.Serializable;
 
 public class Student implements Serializable {
+    private static final long serialVersionUID= -6414283156850779338L;
     private String name;
     private String studentId;
+    private  String specialty;
+
+    public String getSpecialty() {
+        return specialty;
+    }
+
+    public void setSpecialty(String specialty) {
+        this.specialty = specialty;
+    }
+
     private char sex;
     private int classNum;
     private String mail;
@@ -15,6 +26,7 @@ public class Student implements Serializable {
         return "Student{" +
                 "name='" + name + '\'' +
                 ", studentId='" + studentId + '\'' +
+                ", specialty='" + specialty + '\'' +
                 ", sex=" + sex +
                 ", classNum=" + classNum +
                 ", mail='" + mail + '\'' +

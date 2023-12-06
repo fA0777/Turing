@@ -24,6 +24,12 @@ public class Modify {
         s.setStudentId(studentId);
         //与学号相关联的信息也要修改
         OperatingSystem.setStudentInfo(s);
+        String specialty=OperatingSystem.searchSpecialtyByNum(studentId);
+        if (specialty==null){
+            System.out.println("输入的专业码有误，请重新操作！");
+            return;
+        }
+        s.setSpecialty(specialty);
         String date=formatter.format(LocalDateTime.now());
         s.setLastModifiedTime(date);
         System.out.println("修改学号成功！");
@@ -57,7 +63,11 @@ public class Modify {
                 if (p.getStudentId().equals(s.getStudentId())&&p.getCourseId().equals(c.getCourseId())){
                     System.out.println("请输入新成绩：");
                     double score=sc.nextDouble();
-                    //待办；校验数据是否合理
+                    //校验数据是否合理
+                    if (score<0||score>100){
+                        System.out.println("输入的成绩有误，请重新操作！");
+                        return;
+                    }
                     p.setScore(score);
                     //根据score重新设置grade
                     OperatingSystem.setGradeByScore(p);
